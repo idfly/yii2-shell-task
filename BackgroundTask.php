@@ -7,11 +7,17 @@ class BackgroundTask
 
     public static function run($task, $options = [])
     {
-        if(isset($options['concurrent'])) {
+        if(isset($options['concurrent']) &&
+            $options['concurrent'] === true) {
             return BackgroundTask::_concurrentRun($task, $options);
         }
 
         return BackgroundTask::_blockingRun($task, $options);
+    }
+
+    static function _concurrentRun($task, $options)
+    {
+
     }
 
     static function _blockingRun($task, $options)
@@ -23,7 +29,8 @@ class BackgroundTask
         $statusFile = BackgroundTask::_getTaskStatusFile($task);
 
         $cmd = "flock -n $lockFile bash -c " .
-            "'$yiiCmd > $logFile 2>&1; echo $? > $statusFile' >/dev/null 2>/dev/null &";
+            "'$yiiCmd > $logFile 2>&1; echo $? > $statusFile " .
+            ">/dev/null 2>/dev/null &";
 
         if(file_exists($logFile)) {
             unlink($logFile);
@@ -67,18 +74,19 @@ class BackgroundTask
     static function _getYiiCommand($task, $options)
     {
         $php = 'php';
+        $timeout = '';
 
         if(isset($options['mem_limit'])) {
             $php .= ' -d memory_limit=' . $options['mem_limit'];
         }
 
         if(isset($options['timeout'])) {
-            $php .= ' -d max_execution_time=' . $options['timeout'];
+            $timeout = 'timeout ' . $options['timeout'];
         }
 
         $yii = \yii::getAlias('@app/yii');
 
-        return "$php $yii " . escapeshellarg($task);
+        return "$timeout $php $yii " . escapeshellarg($task);
     }
 
     static function _getTasksPath()
