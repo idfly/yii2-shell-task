@@ -1,0 +1,21 @@
+{
+    "name": "idfly/yii2-background-task",
+    "description": "yii2 cli command runner",
+    "keywords": [
+        "yii2",
+        "extension"
+    ],
+    "type": "yii2-extension",
+    "support": {
+        "source": "https://bitbucket.org/idfly/yii2-background-task"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "idfly\\": ""
+        }
+    }
+}
