@@ -2,7 +2,7 @@
 
 namespace idfly;
 
-abstract class BackgroundTask
+abstract class ShellTask
 {
 
     public static function run($task, $options = [])
@@ -12,26 +12,26 @@ abstract class BackgroundTask
             $options['concurrent'] === true;
 
         if($isConcurrentRun) {
-            return BackgroundTask::_concurrentRun($task, $options);
+            return ShellTask::_concurrentRun($task, $options);
         }
 
-        return BackgroundTask::_blockingRun($task, $options);
+        return ShellTask::_blockingRun($task, $options);
     }
 
     protected static function _concurrentRun($task, $options)
     {
-        $taskDir = BackgroundTask::_getTaskDir($task);
+        $taskDir = ShellTask::_getTaskDir($task);
 
         if(!file_exists($taskDir)) {
             mkdir($taskDir);
         }
 
-        $taskId = BackgroundTask::_generateTaskId();
+        $taskId = ShellTask::_generateTaskId();
 
-        $logFile = BackgroundTask::_getLogFile($task, $taskId);
-        $statusFile = BackgroundTask::_getStatusFile($task, $taskId);
+        $logFile = ShellTask::_getLogFile($task, $taskId);
+        $statusFile = ShellTask::_getStatusFile($task, $taskId);
 
-        $yiiCmd = BackgroundTask::_getYiiCommandShellSafe($task, $options);
+        $yiiCmd = ShellTask::_getYiiCommandShellSafe($task, $options);
 
         $flock = 'flock -s ' . escapeshellarg($taskDir) . ' bash -c';
 
@@ -51,11 +51,11 @@ abstract class BackgroundTask
 
     protected static function _blockingRun($task, $options)
     {
-        $yiiCmd = BackgroundTask::_getYiiCommandShellSafe($task, $options);
+        $yiiCmd = ShellTask::_getYiiCommandShellSafe($task, $options);
 
-        $lockFile =  BackgroundTask::_getLockFile($task);
-        $logFile = BackgroundTask::_getLogFile($task);
-        $statusFile = BackgroundTask::_getStatusFile($task);
+        $lockFile =  ShellTask::_getLockFile($task);
+        $logFile = ShellTask::_getLogFile($task);
+        $statusFile = ShellTask::_getStatusFile($task);
 
         $flock = 'flock -n ' . escapeshellarg($lockFile) . ' bash -c';
 
@@ -82,20 +82,20 @@ abstract class BackgroundTask
     public static function getInfo($task, $taskId = null)
     {
         $info = [];
-        $logFile = BackgroundTask::_getLogFile($task, $taskId);
+        $logFile = ShellTask::_getLogFile($task, $taskId);
 
         if(file_exists($logFile)) {
             $info['log'] = file_get_contents($logFile);
         }
 
-        $statusFile = BackgroundTask::_getStatusFile($task, $taskId);
+        $statusFile = ShellTask::_getStatusFile($task, $taskId);
 
         if(file_exists($statusFile)) {
             $info['status_code'] = exec("cat $statusFile");
         }
 
         if(!$taskId) {
-            $lockFile =  BackgroundTask::_getLockFile($task);
+            $lockFile =  ShellTask::_getLockFile($task);
 
             if(file_exists($lockFile)) {
                 $isTaskRunning =
@@ -104,7 +104,7 @@ abstract class BackgroundTask
                 $info['is_running'] = $isTaskRunning;
             }
         } else {
-            $taskDir = BackgroundTask::_getTaskDir($task);
+            $taskDir = ShellTask::_getTaskDir($task);
 
             $isTaskExists =
                 file_exists($logFile) &&
@@ -151,7 +151,7 @@ abstract class BackgroundTask
 
     protected static function _getTaskDir($task)
     {
-        return BackgroundTask::_getTaskFile($task) . '.async';
+        return ShellTask::_getTaskFile($task) . '.async';
     }
 
     protected static function _getTasksPath()
@@ -162,7 +162,7 @@ abstract class BackgroundTask
     protected static function _getTaskFile($task)
     {
         return
-            BackgroundTask::_getTasksPath() . '/' .
+            ShellTask::_getTasksPath() . '/' .
             str_replace('/', '--', $task);
     }
 
@@ -174,10 +174,10 @@ abstract class BackgroundTask
     protected static function _getStatusFile($task, $taskId = null)
     {
         if($taskId === null) {
-            return BackgroundTask::_getTaskFile($task) . '.status';
+            return ShellTask::_getTaskFile($task) . '.status';
         }
 
-        $taskDir = BackgroundTask::_getTaskDir($task);
+        $taskDir = ShellTask::_getTaskDir($task);
         $taskFile = $taskDir . '/' . $taskId;
         $statusFile = $taskFile . '.status';
 
@@ -187,10 +187,10 @@ abstract class BackgroundTask
     protected static function _getLogFile($task, $taskId = null)
     {
         if($taskId === null) {
-            return BackgroundTask::_getTaskFile($task) . '.log';
+            return ShellTask::_getTaskFile($task) . '.log';
         }
 
-        $taskDir = BackgroundTask::_getTaskDir($task);
+        $taskDir = ShellTask::_getTaskDir($task);
         $taskFile = $taskDir . '/' . $taskId;
         $logFile = $taskFile . '.log';
 
@@ -199,6 +199,6 @@ abstract class BackgroundTask
 
     protected static function _getLockFile($task)
     {
-        return BackgroundTask::_getTaskFile($task) . '.lock';
+        return ShellTask::_getTaskFile($task) . '.lock';
     }
 }

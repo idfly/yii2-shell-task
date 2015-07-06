@@ -1,5 +1,5 @@
 {
-    "name": "idfly/yii2-background-task",
+    "name": "idfly/yii2-shell-task",
     "description": "yii2 cli command runner",
     "keywords": [
         "yii2",
@@ -7,7 +7,7 @@
     ],
     "type": "yii2-extension",
     "support": {
-        "source": "https://bitbucket.org/idfly/yii2-background-task"
+        "source": "https://bitbucket.org/idfly/yii2-shell-task"
     },
     "minimum-stability": "dev",
     "require": {
