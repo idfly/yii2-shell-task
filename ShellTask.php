@@ -1,6 +1,6 @@
 <?php
 
-namespace idfly;
+namespace idfly\shellTask;
 
 abstract class ShellTask
 {
@@ -76,7 +76,9 @@ abstract class ShellTask
 
         $cmd = "$flock $flockCmd" . ">/dev/null 2>/dev/null &";
 
-        return exec($cmd);
+        exec($cmd);
+
+        return $task;
     }
 
     public static function getInfo($task, $taskId = null)
