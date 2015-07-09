@@ -17,6 +17,10 @@
 
 3. Выполнить `composer update`
 
+4. Добавить модуль в проектный конфиг:
+
+       `$config['modules']['shellTask'] = ['class' => 'idfly\shellTask\Module'];`
+
 ### Описание
 
 Модуль предоставляет абстрактный класс `idfly\ShellTask` c функциями для
