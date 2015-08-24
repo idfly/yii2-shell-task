@@ -158,7 +158,14 @@ abstract class ShellTask
 
     protected static function _getTasksPath()
     {
-        return \yii::getAlias('@app/runtime/tasks');
+        $path = \yii::getAlias('@app/runtime/tasks');
+
+        if(!file_exists($path)) {
+            mkdir($path);
+            chmod($path, 0740);
+        }
+
+        return $path;
     }
 
     protected static function _getTaskFile($task)
