@@ -94,6 +94,10 @@ abstract class ShellTask
 
         if(file_exists($statusFile)) {
             $info['status_code'] = exec("cat $statusFile");
+
+            $info['last_modify_date'] = exec(
+                "stat $statusFile | grep Modify | cut -f2,3 -d' '"
+            );
         }
 
         if(!$taskId) {
@@ -104,6 +108,9 @@ abstract class ShellTask
                     exec("lsof $lockFile | grep flock | wc -l") === '1';
 
                 $info['is_running'] = $isTaskRunning;
+                if($isTaskRunning) {
+                    $info['processes_count'] = 1;
+                }
             }
         } else {
             $taskDir = ShellTask::_getTaskDir($task);
