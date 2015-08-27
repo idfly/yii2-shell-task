@@ -18,6 +18,14 @@ abstract class ShellTask
         return ShellTask::_blockingRun($task, $options);
     }
 
+    public static function stop($task)
+    {
+        if(!empty($task)) {
+            $cmd = "pkill -f ^php.*" . escapeshellarg($task);
+            exec($cmd);
+        }
+    }
+
     protected static function _concurrentRun($task, $options)
     {
         $taskDir = ShellTask::_getTaskDir($task);
